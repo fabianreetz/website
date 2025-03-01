@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio</title>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -39,15 +41,17 @@
             flex: 1;
             width: 100%;
             height: 90vh;
-            overflow: hidden;
+            overflow-y: auto;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             position: relative;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
         }
-        iframe {
+        canvas {
             width: 100%;
-            height: 90vh;
-            border: none;
+            margin-bottom: 10px;
         }
         footer {
             text-align: center;
@@ -62,10 +66,6 @@
                 height: 80vh;
                 width: 95%;
             }
-            iframe {
-                height: 80vh;
-                width: 100%;
-            }
             footer {
                 font-size: 10px;
                 padding: 5px;
@@ -76,25 +76,40 @@
 <body>
     <div class="container">
         <h1>Fabian Reetz</h1>
-        <div class="pdf-container" id="pdfContainer">
-            <iframe id="pdfFrame" data-src="portfolio.pdf#toolbar=0"></iframe>
-        </div>
+        <div class="pdf-container" id="pdfContainer"></div>
         <footer>
             <p>&copy; 2025 Fabian Reetz | Erstellt von Herr Mister Dr. Maximilian Silchmueller</p>
         </footer>
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            let pdfFrame = document.getElementById("pdfFrame");
-            let observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        pdfFrame.setAttribute("src", pdfFrame.getAttribute("data-src"));
-                        observer.disconnect();
-                    }
-                });
+            var url = "portfolio.pdf";
+            var pdfContainer = document.getElementById("pdfContainer");
+            var pdfjsLib = window['pdfjsLib'];
+            pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
+            
+            pdfjsLib.getDocument(url).promise.then(function(pdf) {
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    pdf.getPage(i).then(function(page) {
+                        var scale = 2;
+                        var viewport = page.getViewport({ scale: scale });
+                        
+                        var canvas = document.createElement("canvas");
+                        var context = canvas.getContext("2d");
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+                        canvas.style.width = "100%";
+                        
+                        var renderContext = {
+                            canvasContext: context,
+                            viewport: viewport
+                        };
+                        
+                        page.render(renderContext);
+                        pdfContainer.appendChild(canvas);
+                    });
+                }
             });
-            observer.observe(pdfFrame);
         });
     </script>
 </body>
