@@ -49,17 +49,7 @@
             height: 90vh;
             border: none;
         }
-        .magnifier {
-            position: absolute;
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            border: 2px solid #000;
-            background: rgba(255, 255, 255, 0.5);
-            pointer-events: none;
-            display: none;
-            transform: scale(2);
-        }
+
         footer {
             text-align: center;
             font-size: 12px;
@@ -82,7 +72,7 @@
     <div class="container">
         <h1>Fabian Reetz</h1>
         <div class="pdf-container" id="pdfContainer">
-            <embed src="test.pdf#toolbar=0" type="application/pdf" />
+            <embed src="portfolio.pdf#toolbar=0" type="application/pdf" />
             <div class="magnifier" id="magnifier"></div>
         </div>
         <footer>
@@ -91,20 +81,7 @@
     </div>
     <script>
         const pdfContainer = document.getElementById('pdfContainer');
-        const magnifier = document.getElementById('magnifier');
 
-        pdfContainer.addEventListener('mousemove', (e) => {
-            let rect = pdfContainer.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-            let y = e.clientY - rect.top;
-            magnifier.style.left = `${x - magnifier.offsetWidth / 2}px`;
-            magnifier.style.top = `${y - magnifier.offsetHeight / 2}px`;
-            magnifier.style.display = 'block';
-        });
-
-        pdfContainer.addEventListener('mouseleave', () => {
-            magnifier.style.display = 'none';
-        });
     </script>
 </body>
 </html>
